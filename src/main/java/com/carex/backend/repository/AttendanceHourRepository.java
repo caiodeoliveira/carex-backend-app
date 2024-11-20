@@ -11,5 +11,8 @@ import java.util.List;
 public interface AttendanceHourRepository extends JpaRepository<AttendanceHour, Long> {
 
     @Query("SELECT h from AttendanceHour h WHERE h.attendanceDate.date = :date")
-    List<AttendanceHour> findByAttendanceDate(@Param("date") String date);
+    List<AttendanceHour> findAllByAttendanceDate(@Param("date") String date);
+
+    @Query("SELECT h from AttendanceHour h WHERE h.attendanceDate.date = :date AND h.hour = :hour")
+    AttendanceHour findByAttendanceDateAndAttendanceHour(@Param("date") String date, @Param("hour") String hour);
 }
