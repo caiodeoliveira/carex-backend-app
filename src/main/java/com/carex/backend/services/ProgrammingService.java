@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProgrammingService {
@@ -43,37 +46,36 @@ public class ProgrammingService {
         programming.setAttendanceDate(dateUtil.applyStringDatePattern(programming.getAttendanceDate()));
 
         programmingRepository.save(programming);
-        this.attendanceHourService.setNewProgrammingAttendanceHourAsUnavailable(programming);
+        this.attendanceHourService.setNewProgrammingAttendanceHourAsUnavailable(programming.getAttendanceDate(), programming.getAttendanceHour());
 
+        List<AttendanceHour> attendanceHourList = attendanceHourRepository.findAllByAttendanceDate(programming.getAttendanceDate());
 
-        List<AttendanceHour> attendanceHourList = attendanceHourRepository.findByAttendanceDate(programming.getAttendanceDate());
         this.attendanceDateService.setAttendanceDateAvailability(programming.getAttendanceDate(), attendanceHourList);
-
-        this.checkAttendanceDateAvailability(programming.getAttendanceDate(), attendanceHourList);
 
         return programming;
     }
 
     public Programming findProgrammingByCode(String code) {return this.programmingRepository.findByAttendanceCode(code);}
 
-//    public void changeProgrammingAttendanceHour(RescheduleProgrammingDTO rescheduleProgrammingDTO) throws ParseException {}
+    public void changeProgrammingAttendanceHour(RescheduleProgrammingDTO rescheduleProgrammingDTO) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
-    public void checkAttendanceDateAvailability(String attendanceDate, List<AttendanceHour> attendanceHourList) {
+        Programming programming = this.programmingRepository.findByAttendanceCode(rescheduleProgrammingDTO.getAttendanceCode());
 
-        AttendanceDate attendanceDateFromDb = this.attendanceDateRepository.findByAttendanceDate(attendanceDate);
+        String newAttendanceDateConverted = formatter.format(rescheduleProgrammingDTO.getNewAttendanceDate());
 
-        boolean isAllHoursUnavailable = attendanceHourList.stream().noneMatch(AttendanceHour::getAvailable);
 
-        if(!isAllHoursUnavailable) {
-            if(!attendanceDateFromDb.getAvailable()) {
-                attendanceDateFromDb.setAvailable(true);
-                attendanceDateRepository.save(attendanceDateFromDb);
-            }
-        }
-        else {
-            attendanceDateFromDb.setAvailable(false);
-            attendanceDateRepository.save(attendanceDateFromDb);
-        }
+      this.attendanceHourService.setNewProgrammingAttendanceHourAsUnavailable(newAttendanceDateConverted, rescheduleProgrammingDTO.getNewAttendanceHour());
+      this.attendanceHourService.setPreviousProgrammingAttendanceHourAsAvailable(programming.getAttendanceDate(), programming.getAttendanceHour());
+
+      List<String> attendanceDateList = List.of(programming.getAttendanceDate(), newAttendanceDateConverted);
+
+      programming.setAttendanceDate(newAttendanceDateConverted);
+      programming.setAttendanceHour(rescheduleProgrammingDTO.getNewAttendanceHour());
+      this.programmingRepository.save(programming);
+
+      this.attendanceDateService.changeAttendanceDatesAvailability(attendanceDateList);
+
     }
 
 }
