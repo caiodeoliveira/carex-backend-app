@@ -1,17 +1,12 @@
 package com.carex.backend.services;
 
 import com.carex.backend.entity.AttendanceHour;
-import com.carex.backend.entity.Programming;
-import com.carex.backend.repository.AttendanceDateRepository;
 import com.carex.backend.repository.AttendanceHourRepository;
 import com.carex.backend.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -34,7 +29,7 @@ public class AttendanceHourService {
         DateUtil dateUtil = new DateUtil();
         dateUtil.applyStringDatePattern(date);
 
-        List<AttendanceHour> attendanceHourListFromDb = attendanceHourRepository.findByAttendanceDate(date);
+        List<AttendanceHour> attendanceHourListFromDb = attendanceHourRepository.findAllByAttendanceDate(date);
         List<AttendanceHour> availableAttendanceHourList = new ArrayList<>();
 
         for(AttendanceHour row : attendanceHourListFromDb){
@@ -48,18 +43,19 @@ public class AttendanceHourService {
         return availableAttendanceHourList;
     }
 
-    public void setNewProgrammingAttendanceHourAsUnavailable(Programming programming) {
+    public void setNewProgrammingAttendanceHourAsUnavailable(String date, String hour) {
 
-        List<AttendanceHour> availableAttendanceHourListFromDb = findAllAvailableHours();
+        AttendanceHour attendanceHourFromDb = this.attendanceHourRepository.findByAttendanceDateAndAttendanceHour(date, hour);
 
-        availableAttendanceHourListFromDb.forEach(attendanceHourRow -> {
-            if(programming.getAttendanceDate().equals(attendanceHourRow.getAttendanceDate().getDate())) {
-                if(programming.getAttendanceHour().equals(attendanceHourRow.getHour())) {
-                    attendanceHourRow.setAvailable(false);
-                    attendanceHourRepository.save(attendanceHourRow);
-                }
-            }
-        });
+        attendanceHourFromDb.setAvailable(false);
+        attendanceHourRepository.save(attendanceHourFromDb);
+
+    }
+
+    public void setPreviousProgrammingAttendanceHourAsAvailable(String date, String hour) {
+        AttendanceHour previousAttendanceHour = this.attendanceHourRepository.findByAttendanceDateAndAttendanceHour(date, hour);
+        previousAttendanceHour.setAvailable(true);
+        this.attendanceHourRepository.save(previousAttendanceHour);
     }
 
 }
