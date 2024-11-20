@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,16 +26,16 @@ public class AttendanceHourService {
         return attendanceHours;
     }
 
-    public List<AttendanceHour> findAllAvailableAttendanceHourByDate(String date) {
+    public List<AttendanceHour> findAllAvailableAttendanceHourByDate(Date date) {
         DateUtil dateUtil = new DateUtil();
-        dateUtil.applyStringDatePattern(date);
+        String dateFormatted = dateUtil.convertDateToString(date);
 
-        List<AttendanceHour> attendanceHourListFromDb = attendanceHourRepository.findAllByAttendanceDate(date);
+        List<AttendanceHour> attendanceHourListFromDb = attendanceHourRepository.findAllByAttendanceDate(dateFormatted);
         List<AttendanceHour> availableAttendanceHourList = new ArrayList<>();
 
         for(AttendanceHour row : attendanceHourListFromDb){
             if(row.getAvailable()) {
-                if(row.getAttendanceDate().getDate().equals(date)){
+                if(row.getAttendanceDate().getDate().equals(dateFormatted)){
                     availableAttendanceHourList.add(row);
                 }
             }

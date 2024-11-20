@@ -22,7 +22,7 @@ public class AttendanceHourResource {
     AttendanceHourService attendanceHourService;
 
     @GetMapping(value = "/allhoursavailable/{date}")
-    public ResponseEntity<List<AttendanceHour>> getAllProfessionalSchedule(@PathVariable String date) {
+    public ResponseEntity<List<AttendanceHour>> getAllProfessionalSchedule(@PathVariable Date date) {
         List<AttendanceHour> professionalScheduleList = this.attendanceHourService.findAllAvailableAttendanceHourByDate(date);
         return ResponseEntity.ok().body(professionalScheduleList);
     }
