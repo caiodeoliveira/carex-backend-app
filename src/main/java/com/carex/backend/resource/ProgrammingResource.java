@@ -38,9 +38,9 @@ public class ProgrammingResource {
         return ResponseEntity.ok().body(programming);
     }
 
-//    @PatchMapping(value = "/reschedule")
-//    public void updateProgrammingAttendanceHour(@RequestBody RescheduleProgrammingDTO rescheduleProgrammingDTO) throws ParseException {
-//        this.programmingService.changeProgrammingAttendanceHour(rescheduleProgrammingDTO);
-//    }
+    @PatchMapping(value = "/reschedule")
+    public void updateProgrammingAttendanceHour(@RequestBody RescheduleProgrammingDTO rescheduleProgrammingDTO) {
+        this.programmingService.changeProgrammingAttendanceHour(rescheduleProgrammingDTO);
+    }
 
 }
