@@ -11,6 +11,6 @@ FROM openjdk:17-jdk-slim
 
 EXPOSE 80
 
-COPY --from=build /target/backend-0.0.1-SNAPSHOT.jar /target/backend-0.0.1-SNAPSHOT.jar.original
+COPY --from=build /target/backend-0.0.1-SNAPSHOT.jar .jar
 
 ENTRYPOINT ["java", "-jar", ".jar"]
