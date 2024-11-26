@@ -13,4 +13,4 @@ EXPOSE 80
 
 COPY --from=build /target/backend-0.0.1-SNAPSHOT.jar /target/backend-0.0.1-SNAPSHOT.jar.original
 
-ENTRYPOINT ["java", "-jar", ".jar.original"]
+ENTRYPOINT ["java", "-jar", ".jar."]
