@@ -1,16 +1,20 @@
-FROM ubuntu:latest AS build
+FROM openjdk:17-jdk-slim AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
-COPY . .
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
 
-RUN apt-get install maven -y
-RUN mvn clean install
+RUN chmod +x ./mvnw
+
+RUN ./mvnw dependency:resolve
+
+COPY src src
+
+RUN ./mvnw package
 
 FROM openjdk:17-jdk-slim
 
-EXPOSE 8080
+WORKDIR demo
 
-COPY --from=build /target/backend-0.0.1-SNAPSHOT.jar /target/backend-0.0.1-SNAPSHOT.jar.original
+COPY --from=build target/*.jar demo.jar
 
-ENTRYPOINT ["java", "-jar", ".jar"]
+ENTRYPOINT ["java", "-jar", "demo.jar"]
