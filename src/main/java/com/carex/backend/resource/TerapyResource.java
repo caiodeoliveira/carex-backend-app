@@ -36,7 +36,7 @@ public class TerapyResource {
 
     @GetMapping(value = "/allterapiesdata/{size}")
     public ResponseEntity<List<TerapyDTO>> getAllTerapyData(@PathVariable String size) {
-        List<TerapyDTO> terapyDataList = this.terapyService.findAllTerapyDTOs(size);
+        List<TerapyDTO> terapyDataList = this.terapyService.findAllTerapiesWithImagesBySize(size);
         return ResponseEntity.ok().body(terapyDataList);
     }
 }
