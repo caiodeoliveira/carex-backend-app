@@ -1,14 +1,12 @@
 package com.carex.backend.resource;
 
+import com.carex.backend.dto.TerapyDTO;
 import com.carex.backend.entity.Terapy;
 import com.carex.backend.services.TerapyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,7 +14,7 @@ import java.util.List;
 public class TerapyResource {
 
     @Autowired
-    private TerapyService terapyService;
+    TerapyService terapyService;
 
     @GetMapping(value = "/allTerapies")
     public ResponseEntity<List<Terapy>> getAllTerapies() {
@@ -34,5 +32,11 @@ public class TerapyResource {
     public ResponseEntity<List<String>> getAllTerapyDescriptions() {
         List<String> descriptions = this.terapyService.findAllTerapyDescriptions();
         return ResponseEntity.ok().body(descriptions);
+    }
+
+    @GetMapping(value = "/allterapiesdata/{size}")
+    public ResponseEntity<List<TerapyDTO>> getAllTerapyData(@PathVariable String size) {
+        List<TerapyDTO> terapyDataList = this.terapyService.findAllTerapyDTOs(size);
+        return ResponseEntity.ok().body(terapyDataList);
     }
 }
