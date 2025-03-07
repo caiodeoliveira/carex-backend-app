@@ -75,7 +75,7 @@ public class TerapyService {
                 if(size.equals("small")) {
                     alternativeTerapyImagesMap.put(image.getIdentifier(), image.getSmall());
                 }
-                if(size.equals("medium")) {
+                if(size.equals("regular")) {
                     alternativeTerapyImagesMap.put(image.getIdentifier(), image.getRegular());
                 }
                 if(size.equals("big")) {
@@ -94,7 +94,7 @@ public class TerapyService {
                 if(size.equals("small")) {
                     physioterapyTerapyImagesMap.put(image.getIdentifier(),image.getSmall());
                 }
-                if(size.equals("medium")) {
+                if(size.equals("regular")) {
                     physioterapyTerapyImagesMap.put(image.getIdentifier(),image.getRegular());
                 }
                 if(size.equals("big")) {
