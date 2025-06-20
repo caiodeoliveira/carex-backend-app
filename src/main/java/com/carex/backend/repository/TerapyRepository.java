@@ -9,4 +9,7 @@ import java.util.List;
 public interface TerapyRepository extends JpaRepository<Terapy, Long> {
     @Query("SELECT t from Terapy t ORDER BY t.isAlternative DESC")
     List<Terapy> findAllTerapySortingIsAlternativeFirst();
+
+    @Query("SELECT t.description FROM Terapy t")
+    List<String> findAllTerapyDescriptions();
 }
