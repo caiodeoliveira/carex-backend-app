@@ -6,6 +6,7 @@ import com.carex.backend.enums.ImagesEnum;
 import com.carex.backend.repository.TerapyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,45 +29,30 @@ public class TerapyService {
         return terapyListFromDb.stream().map(Terapy::getName).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<String> findAllTerapyDescriptions() {
-        List<Terapy> terapyListFromDb = terapyRepository.findAll();
-        return terapyListFromDb.stream().map(Terapy::getDescription).collect(Collectors.toList());
+        return terapyRepository.findAllTerapyDescriptions();
     }
 
     public List<TerapyDTO> findAllTerapiesWithImagesBySize(String size) {
-        
         List<Terapy> terapyListFromDb = terapyRepository.findAllTerapySortingIsAlternativeFirst();
-        List<TerapyDTO> terapyDTOList = new ArrayList<>();
-
         Map<String, String> alternativeImagesMap = this.getAllAlternativeImagesBySize(size);
         Map<String, String> physioterapyImagesMap = this.getAllPhysioterapyImagesBySize(size);
 
-        terapyListFromDb.forEach(terapy -> {
-            if(terapy.isAlternative()) {
-                TerapyDTO terapyDTO = new TerapyDTO();
-                terapyDTO.setName(terapy.getName());
-                terapyDTO.setDescription(terapy.getDescription());
-
-                terapyDTO.setImage(alternativeImagesMap.get(terapy.getName()));
-                terapyDTO.setIsAlternative(true);
-                terapyDTOList.add(terapyDTO);
-            }
-        });
-
-        terapyListFromDb.forEach(terapy -> {
-            if(!terapy.isAlternative()) {
-                TerapyDTO terapyDTO = new TerapyDTO();
-                terapyDTO.setName(terapy.getName());
-                terapyDTO.setDescription(terapy.getDescription());
-
-                terapyDTO.setImage(physioterapyImagesMap.get(terapy.getName()));
-                terapyDTO.setIsAlternative(false);
-                terapyDTOList.add(terapyDTO);
-            }
-        });
-
-            return terapyDTOList;
+        return terapyListFromDb.stream()
+                .map(terapy -> {
+                    TerapyDTO dto = new TerapyDTO();
+                    dto.setName(terapy.getName());
+                    dto.setDescription(terapy.getDescription());
+                    dto.setIsAlternative(terapy.isAlternative());
+                    dto.setImage(terapy.isAlternative()
+                            ? alternativeImagesMap.get(terapy.getName())
+                            : physioterapyImagesMap.get(terapy.getName()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
+
     public Map<String, String> getAllAlternativeImagesBySize(String size) {
         Map<String, String> alternativeTerapyImagesMap = new HashMap<>();
 
