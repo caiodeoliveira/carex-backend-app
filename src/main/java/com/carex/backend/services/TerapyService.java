@@ -36,8 +36,8 @@ public class TerapyService {
 
     public List<TerapyDTO> findAllTerapiesWithImagesBySize(String size) {
         List<Terapy> terapyListFromDb = terapyRepository.findAllTerapySortingIsAlternativeFirst();
-        Map<String, String> alternativeImagesMap = this.getAllAlternativeImagesBySize(size);
-        Map<String, String> physioterapyImagesMap = this.getAllPhysioterapyImagesBySize(size);
+        Map<String, String> alternativeImagesMap = getImagesBySizeAndType(size, true);
+        Map<String, String> physioterapyImagesMap = getImagesBySizeAndType(size, false);
 
         return terapyListFromDb.stream()
                 .map(terapy -> {
@@ -53,42 +53,28 @@ public class TerapyService {
                 .collect(Collectors.toList());
     }
 
-    public Map<String, String> getAllAlternativeImagesBySize(String size) {
-        Map<String, String> alternativeTerapyImagesMap = new HashMap<>();
+    public Map<String, String> getImagesBySizeAndType(String size, boolean isAlternative) {
+        Map<String, String> imageMap = new HashMap<>();
 
-        for(ImagesEnum image : ImagesEnum.values()) {
-            if(image.isAlternative()) {
-                if(size.equals("small")) {
-                    alternativeTerapyImagesMap.put(image.getIdentifier(), image.getSmall());
-                }
-                if(size.equals("regular")) {
-                    alternativeTerapyImagesMap.put(image.getIdentifier(), image.getRegular());
-                }
-                if(size.equals("big")) {
-                    alternativeTerapyImagesMap.put(image.getIdentifier(), image.getBig());
+        for (ImagesEnum image : ImagesEnum.values()) {
+            if (image.isAlternative() == isAlternative) {
+                switch (size) {
+                    case "small":
+                        imageMap.put(image.getIdentifier(), image.getSmall());
+                        break;
+                    case "regular":
+                        imageMap.put(image.getIdentifier(), image.getRegular());
+                        break;
+                    case "big":
+                        imageMap.put(image.getIdentifier(), image.getBig());
+                        break;
+                    default:
+                        break;
                 }
             }
         }
-        return alternativeTerapyImagesMap;
-    }
 
-    public Map<String, String> getAllPhysioterapyImagesBySize(String size) {
-        Map<String, String> physioterapyTerapyImagesMap = new HashMap<>();
-
-        for(ImagesEnum image : ImagesEnum.values()) {
-            if(!image.isAlternative()) {
-                if(size.equals("small")) {
-                    physioterapyTerapyImagesMap.put(image.getIdentifier(),image.getSmall());
-                }
-                if(size.equals("regular")) {
-                    physioterapyTerapyImagesMap.put(image.getIdentifier(),image.getRegular());
-                }
-                if(size.equals("big")) {
-                    physioterapyTerapyImagesMap.put(image.getIdentifier(),image.getBig());
-                }
-            }
-        }
-        return physioterapyTerapyImagesMap;
+        return imageMap;
     }
 
 }
