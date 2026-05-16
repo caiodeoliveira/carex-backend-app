@@ -1,13 +1,17 @@
 package com.carex.backend.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "TB_USER")
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -17,6 +21,8 @@ public class User implements Serializable {
     private String name;
     private Integer age;
     private char gender;
+    private String email;
+    private String password;
 
     public User() {
     }
@@ -58,6 +64,32 @@ public class User implements Serializable {
 
     public void setGender(char gender) {
         this.gender = gender;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
